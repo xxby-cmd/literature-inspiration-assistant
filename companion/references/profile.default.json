@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "purpose": "持续学习、拓宽视野、获取研究启发，并帮助调研自己输入的课题",
+  "timezone": "Asia/Shanghai",
+  "interests": [
+    "数学与计算",
+    "机器人"
+  ],
+  "math_level": "大学基础，可在首次设置中修改",
+  "python_level": "初学者",
+  "english_level": "中文优先，配少量英语练习",
+  "daily_total": 5,
+  "preference_count": 3,
+  "exploration_count": 2,
+  "reminders": [
+    "09:00",
+    "21:00"
+  ],
+  "evening_policy": "提醒同一天五篇与精读实践，不新增五篇",
+  "english_daily": {
+    "short_sentences": 1,
+    "words": 3,
+    "exercise": 1
+  },
+  "reading": {
+    "prepare_coarse": true,
+    "prepare_at": "08:30",
+    "navigation": "in_page",
+    "remember_position": true
+  },
+  "budget": "现有Codex与免费渠道；新增费用先询问并获同意",
+  "wechat": {
+    "provider": "pushplus",
+    "daily_channel": "clawbot",
+    "interactive_channel": "clawbot",
+    "reading_delivery": "web_only",
+    "daily_style": "brief",
+    "enabled": false,
+    "binding_verified": false
+  },
+  "exploration_domains": [
+    "天文学与空间科学",
+    "材料与能源",
+    "生态与环境",
+    "生物学",
+    "认知与语言",
+    "地球科学",
+    "食品与农业",
+    "基础物理"
+  ],
+  "source": "公开默认示例，首次安装时由使用者选择",
+  "enabled": true
+}

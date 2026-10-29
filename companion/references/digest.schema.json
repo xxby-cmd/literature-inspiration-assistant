@@ -1,0 +1,19 @@
+{
+  "type":"object","additionalProperties":false,
+  "required":["date","search_scope","cards","english","practice"],
+  "properties":{
+    "date":{"type":"string"},"search_scope":{"type":"string"},
+    "cards":{"type":"array","minItems":5,"maxItems":5,"items":{
+      "type":"object","additionalProperties":false,
+      "required":["group","field","title_cn","title_original","authors","published_date","source_url","plain_summary","why","evidence_scope","publication_status","learn"],
+      "properties":{
+        "group":{"type":"string","enum":["preference","exploration"]},
+        "field":{"type":"string"},"title_cn":{"type":"string"},"title_original":{"type":"string"},
+        "authors":{"type":"string"},"published_date":{"type":"string"},"source_url":{"type":"string"},
+        "plain_summary":{"type":"string"},"why":{"type":"string"},"evidence_scope":{"type":"string"},
+        "publication_status":{"type":"string"},"learn":{"type":"string"}
+      }
+    }},
+    "english":{"type":"string"},"practice":{"type":"string"}
+  }
+}

@@ -1,0 +1,34 @@
+name: Windows deployment check
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: reader/package-lock.json
+      - name: Python regression
+        run: python -X utf8 -m unittest discover -s tests -p "test_*.py"
+      - name: Clean demo deployment
+        run: python -X utf8 launch.py install --demo --yes --no-browser --home "$env:RUNNER_TEMP\literature-demo"
+      - name: Reader tests and types
+        working-directory: reader
+        run: |
+          npm test
+          npm run typecheck
+      - name: Runtime isolation and restart
+        run: python -X utf8 scripts/smoke.py --home "$env:RUNNER_TEMP\literature-demo"
+      - name: Always stop demo
+        if: always()
+        run: python -X utf8 launch.py stop --home "$env:RUNNER_TEMP\literature-demo" --wait 120

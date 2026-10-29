@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>文献启发 · 点选入口</title>
+<style>
+:root{font-family:"Microsoft YaHei","PingFang SC",sans-serif;color:#172c35;background:#f3f6f5;line-height:1.65}*{box-sizing:border-box}body{margin:0}main{max-width:820px;margin:auto;padding:28px 20px 80px}h1{font-size:28px;margin:4px 0}h2{font-size:20px;margin:22px 0 8px}p{margin:6px 0 16px}.muted,small{color:#52666d}small{display:block;font-size:13px}.top{background:#fff;border:1px solid #d8e3df;border-radius:18px;padding:24px}.row{display:flex;gap:10px;flex-wrap:wrap}button{min-height:46px;padding:10px 17px;font:inherit;font-weight:600;border:1px solid #c2d4cd;border-radius:10px;background:#fff;color:#204f43;cursor:pointer}button:hover{background:#eaf4ef}button.primary{background:#205b4a;color:white;border-color:#205b4a}button:disabled{cursor:wait;opacity:.6}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #bc7021;outline-offset:3px}.papers{display:grid;gap:12px}.paper{display:flex;gap:12px;padding:18px;background:white;border:1px solid #d8e3df;border-radius:14px;cursor:pointer}.paper:has(input:checked){border:2px solid #2c765e;padding:17px;background:#f2faf5}.paper input{width:21px;height:21px;margin:5px 0;accent-color:#205b4a;flex-shrink:0}.paper strong{display:block;font-size:17px;margin:4px 0}.summary{display:block;color:#374e58;margin:8px 0}a{color:#205b4a;text-underline-offset:4px}.actions{margin-top:14px;padding:18px;background:#e3eee9;border-radius:14px}.hint{font-size:14px;color:#405950;margin:0 0 10px}details{margin:16px 0;background:white;border:1px solid #d8e3df;border-radius:12px;padding:16px}summary{cursor:pointer;font-weight:600;min-height:34px}label.topic{display:block;margin:14px 0 5px}textarea{width:100%;font:inherit;padding:12px;border:1px solid #b9ccc5;border-radius:10px;resize:vertical}#notice{margin:16px 0;color:#204f43;font-weight:600;min-height:26px}#answer{white-space:pre-wrap;overflow-wrap:anywhere;background:white;border-radius:14px;border:1px solid #d8e3df;padding:20px}#answer:empty{display:none}pre{white-space:pre-wrap;font:inherit;margin:10px 0}.badge{font-size:13px;font-weight:600;color:#205b4a;letter-spacing:1px}@media(max-width:500px){main{padding:18px 14px 50px}.top{padding:18px}.row button{flex:1 1 auto}.paper{padding:15px}.paper:has(input:checked){padding:14px}h1{font-size:25px}}@media(prefers-reduced-motion:no-preference){button{transition:background .15s ease}}
+</style></head><body><main>
+<section class="top"><div class="badge">文献启发 / 点一下，继续学</div><h1>今天，想先读哪一篇？</h1><p class="muted">三篇贴近兴趣，两篇打开眼界。常用操作直接点，不用记指令。</p><div class="row"><button class="primary" data-action="today">今日文献</button><button data-action="preferences">我的偏好</button></div><small>电脑点选入口 · 与微信共用研究记录</small></section>
+<h2><!--DATE--> · 五篇速览</h2><p class="muted">先点选一篇，再选择下面的阅读或反馈按钮。</p><section class="papers"><!--CARDS--></section>
+<section class="actions"><p class="hint" id="selection">尚未选择论文</p><div class="row"><button class="primary" data-action="coarse" data-paper="1">粗读：讲明白</button><button data-action="deep" data-paper="1">精读：一步步学</button></div><div class="row" style="margin-top:10px"><button data-action="like" data-paper="1">喜欢</button><button data-action="dislike" data-paper="1">不感兴趣</button><button data-action="hard" data-paper="1">太难，讲浅一点</button><button data-action="read" data-paper="1">已读</button><button data-action="practice" data-paper="1">想实践</button></div></section>
+<div id="notice" role="status" aria-live="polite"></div><div id="answer" aria-live="polite"></div>
+<details><summary>一点英语和今天动手</summary><pre><!--ENGLISH--></pre><pre><!--PRACTICE--></pre></details>
+<details><summary>我想研究一个新问题</summary><label for="topic" class="topic">你想研究什么？</label><textarea id="topic" rows="3" maxlength="2000" placeholder="可以直接说想法，不必先整理成专业术语。"></textarea><p class="hint">也可用手机键盘的语音输入。助手会按四级相关性查找前人研究。</p><button data-action="topic">开始查课题</button></details>
+<p class="muted" style="font-size:13px">面板和微信共用同一份偏好与研究记录。电脑及助手需要保持运行；反馈不会取消每天两篇跨领域探索。</p>
+</main><script>
+const edition='<!--DATE-->', notice=document.querySelector('#notice'), output=document.querySelector('#answer');
+let busy=false, pending=null;
+function controls(value){busy=value;document.querySelectorAll('button[data-action]').forEach(b=>b.disabled=value);output.setAttribute('aria-busy',value?'true':'false')}
+document.querySelectorAll('input[name=paper]').forEach(input=>input.addEventListener('change',()=>{document.querySelector('#selection').textContent='已选择第 '+input.value+' 篇：'+input.closest('label').querySelector('strong').textContent}));
+async function submit(payload){
+ controls(true);sessionStorage.setItem('literature-pending',JSON.stringify(payload));
+ try{const response=await fetch('/action',{method:'POST',headers:{'Content-Type':'application/json','X-Panel-Request':'1'},body:JSON.stringify(payload)});const data=await response.json();
+ if(!response.ok){notice.textContent=data.error||'提交未完成';controls(false);sessionStorage.removeItem('literature-pending');return}
+ watch(payload.request_id);
+ }catch(error){notice.textContent='连接中断，正在用同一任务编号重新连接，不会重复创建任务。';setTimeout(()=>submit(payload),7000)}
+}
+async function watch(id){
+ try{const response=await fetch('/result/'+id);const data=await response.json();if(!response.ok)throw Error(data.error||'查询暂未完成');
+ if(data.answer){output.textContent=data.answer;notice.textContent=data.status==='failed'||data.status==='needs_review'?'正文已完成；微信投递未确认，可先在这里阅读。':'正文已完成，结果也会通过微信发送。';controls(false);pending=null;sessionStorage.removeItem('literature-pending');return}
+ if(data.status==='needs_review'){notice.textContent='这次处理未完成，请稍后重试；不会替你重复提交。';controls(false);pending=null;sessionStorage.removeItem('literature-pending');return}
+ notice.textContent=data.status==='running'?'正在查找和解读文献，可能需要几分钟。你可以稍后回来查看。':'已收到选择，正在排队。';setTimeout(()=>watch(id),2500);
+ }catch(error){notice.textContent='暂时连不上助手，保留本次任务，正在重新查询。';setTimeout(()=>watch(id),7000)}
+}
+document.querySelectorAll('button[data-action]').forEach(button=>button.addEventListener('click',async()=>{
+ if(busy)return;const action=button.dataset.action,paper=document.querySelector('input[name=paper]:checked');
+ if(button.dataset.paper&&!paper){notice.textContent='先点选上面的一篇论文。';document.querySelector('.papers').scrollIntoView({behavior:'auto',block:'center'});return}
+ const topic=document.querySelector('#topic').value.trim();if(action==='topic'&&!topic){notice.textContent='先写下或用语音输入你的研究问题。';document.querySelector('#topic').focus();return}
+ const bytes=crypto.getRandomValues(new Uint8Array(16));const id=Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
+ controls(true);output.textContent='';notice.textContent='正在提交你的选择…';
+ submit({action,request_id:id,date:edition,paper:paper?Number(paper.value):null,topic});
+}));
+try{pending=JSON.parse(sessionStorage.getItem('literature-pending')||'null');if(pending)submit(pending)}catch(error){sessionStorage.removeItem('literature-pending')}
+</script></body></html>
