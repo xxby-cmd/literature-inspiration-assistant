@@ -20,6 +20,11 @@ from scripts import manage, runtime, wechat
 
 
 class InstallationTests(unittest.TestCase):
+    def test_windows_entrypoints_retain_crlf_for_github_zip_downloads(self):
+        for entry in ROOT.glob("*.cmd"):
+            data = entry.read_bytes()
+            self.assertEqual(data.count(b"\r\n"), data.count(b"\n"), entry.name)
+
     def test_old_cli_is_not_reused_without_required_capabilities(self):
         with patch.object(
             runtime,

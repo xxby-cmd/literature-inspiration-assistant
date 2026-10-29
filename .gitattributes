@@ -5,4 +5,5 @@
 *.mjs text eol=lf
 *.json text eol=lf
 *.md text eol=lf
-*.cmd text eol=crlf
+# GitHub ZIP must retain Windows line endings, not only Git checkouts.
+*.cmd -text
