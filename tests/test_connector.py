@@ -384,6 +384,7 @@ class ConnectorTests(unittest.TestCase):
             m.validate_digest(data, data["date"])
 
     def test_only_capacity_error_retries_with_same_arguments(self):
+        self.store.put("codex_executable", "mock-codex.exe")
         commands = []
 
         def run(args, **kwargs):
@@ -400,6 +401,7 @@ class ConnectorTests(unittest.TestCase):
             return subprocess.CompletedProcess(args, 0, "", "")
 
         with (
+            patch.object(m.shutil, "which", return_value=None),
             patch.object(m.subprocess, "run", side_effect=run),
             patch.object(m.time, "sleep") as sleep,
         ):
@@ -408,7 +410,9 @@ class ConnectorTests(unittest.TestCase):
         sleep.assert_called_once_with(30)
 
     def test_quota_error_is_not_capacity_retry(self):
+        self.store.put("codex_executable", "mock-codex.exe")
         with (
+            patch.object(m.shutil, "which", return_value=None),
             patch.object(
                 m.subprocess,
                 "run",
